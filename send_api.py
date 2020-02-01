@@ -1,15 +1,6 @@
 
+
 '''
-* connect
-    create connection
-    ```json
-    {
-        "event":"connect",
-        "playerName":"xxoo",
-        "success":true/false,
-        "uuid":"xxoo"
-    }
-    ```
 
 * waiting(sender)
     update players
@@ -34,6 +25,17 @@
         "event":"enterGame"
     }
     ```
+'''
+
+
+def enter_game():
+    ret={
+        "event": "enterGame"
+    }
+    broadcast(ret, None)
+
+
+'''
     
 * start_game(sender)
     tell players the game has started
@@ -53,24 +55,13 @@
     }
     ```
 '''
-def move(entity):
-    ret={
-        "event":"move",
-        "uuid":entity.uuid,
-        "x":entity.x,
-        "y":entity.y,
-        "z":entity.z,
-        "rotation":entity..rotation
-    }
+
+
 
 '''
 * change_weapon
     ```json
-    {
-        "event":"change_weapon",
-        "uuid":"ooxx",
-        "choice":87
-    }
+    
     ```
 * attack
     ```json

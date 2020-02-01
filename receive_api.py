@@ -1,6 +1,18 @@
 from server import *
+from state_handler import *
 import entity
+from entity import *
 import send_api
+import json
+import game_server
+
+
+def broadcast(msg: dict, broadcaster: uuid.UUID):
+    game_server.GameServer.get_server_ins().broadcast(json.dumps(msg), broadcaster)
+
+
+def send(msg: dict, id: uuid.UUID)):
+    game_server.GameServer.get_server_ins().send(json.dumps(msg), id)
 '''
 * connect(sender)
     create connection
@@ -14,7 +26,22 @@ import send_api
 
 
 def connect(sender, data):
-
+    if success:
+        ret={
+            "event": "connect",
+            "playerName": player.name
+            "success": True
+            "uuid": player.uuid
+        }
+        send(ret,player.uuid)
+    else:
+        ret={
+            "event": "connect",
+            "playerName": ""
+            "success": False
+            "uuid": None
+        }
+        send(ret,player.uuid)
 
 '''
 * ready(sender)
@@ -30,7 +57,7 @@ def connect(sender, data):
 def ready(sender, data):
     ready_dict[sender] = True
     if all(ready_dict.items):
-        pass
+        send_api.ready()
 
 
 '''
@@ -71,12 +98,21 @@ def entered_game(sender, data):
 
 
 def move(sender, data):
-    e = entity.get(data['uuid'])
-    e.x = data['location']['x']
-    e.y = data['location']['x']
-    e.z = data['location']['x']
-    e.rotation = data['rotation']
-    send_api.move(entity)
+    entity = get(data['uuid'])
+    entity.x = data['x']
+    entity.y = data['y']
+    entity.z = data['z']
+    entity.rotation = data['rotation']
+    
+    ret = {
+        "event": "move",
+        "uuid": entity.uuid,
+        "x": entity.x,
+        "y": entity.y,
+        "z": entity.z,
+        "rotation": entity.rotation
+    }
+    broadcast(ret, entity.uuid)
 
 
 '''
@@ -92,7 +128,14 @@ def move(sender, data):
 
 
 def change_weapon(sender, data):
-    get_player(sender).weapon = data['choice']
+    player=get_player(sender)
+    player.weapon = data['choice']
+    ret={
+        "event":"change_weapon",
+        "uuid":player.uuid,
+        "choice":player.weapon
+    }
+    broadcast(ret,None)
 
 
 '''
@@ -108,7 +151,11 @@ def change_weapon(sender, data):
 
 
 def attack(sender, data):
-    send_api.attack(entity)
+    ret={
+        "event":"attack",
+        "weapon":get_player(sender).weapon,
+    }
+    broadcast(ret,None)
 
 
 '''
@@ -128,11 +175,16 @@ def attack(sender, data):
 
 
 def damage(sender, data):
-    entity.damage(entity.get(data['damager']),
-                  entity.get(data['target']), data['amount'])
-    send_api.damage(entity)
+    entity.damage(get(data['damager']),
+                  get(data['target']), data['amount'])
 
-
+    ret={
+        "event":"damage",
+        "uuid":data['target'],
+        "amount":data['amount'],
+        "healthLeft":get(data['target']).health
+    }
+    broadcast(ret,None)
 '''
 * spawn
     when player spawn an object
@@ -147,6 +199,23 @@ def damage(sender, data):
         }
     }
     ```
+'''
+
+
+def spawn(sender, data):
+    e=Entity(data['type'],get(sender).team,data['x'],data['y'],data['z'])
+
+    ret={
+        "event":"spawn",
+        "type":e.type,
+        "uuid":e.uuid,
+        "team":e.team,
+        "x":e.x,
+        "y":e.y,
+        "z":e.z
+    }
+    broadcast(ret,sender)
+'''
 * purchase(sender)
     when player buy something
     ```json
@@ -155,3 +224,6 @@ def damage(sender, data):
         "item":"generator"
     }
 '''
+def purchase(sender, data):
+    player=get_player(sender)
+    

@@ -36,6 +36,9 @@ class Player(Entity):
         self.resource = 0
         self.weapon = 0
         self.alive = True
+        self.item={
+            "generator":0
+        }
 
 
 class Generator(Entity):
@@ -48,7 +51,7 @@ class Generator(Entity):
 def get_player_list():
     return list(k in entities if entities[k].type=="player")
 
-def get(uuid):
+def get(uuid) -> Entity:
     return entities[uuid]
 
 def get_player(uuid) -> Player:
