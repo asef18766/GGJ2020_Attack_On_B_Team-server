@@ -1,4 +1,7 @@
 import uuid
+#from game_server import *
+#from server import *
+import json
 entities = {}
 MAX_HEALTH = {
     "building": 10000,
@@ -8,6 +11,7 @@ MAX_HEALTH = {
     "wall": 1,
 }
 INIT_BUILDING_HEALTH = 100
+GENERATOR_PRICE = 100
 
 
 class Entity():
@@ -17,7 +21,7 @@ class Entity():
         self.x = x
         self.y = y
         self.z = z
-        self.rotation=0
+        self.rotation = 0
         self.uuid = uuid.uuid4()
         while self.uuid in entities:
             self.uuid = uuid.uuid4()
@@ -26,7 +30,7 @@ class Entity():
         if self.type == "building":
             self.health = INIT_BUILDING_HEALTH
 
-        entities[self.uuid]=self
+        entities[self.uuid] = self
 
 
 class Player(Entity):
@@ -36,8 +40,8 @@ class Player(Entity):
         self.resource = 0
         self.weapon = 0
         self.alive = True
-        self.item={
-            "generator":0
+        self.item = {
+            "generator": 0
         }
 
 
@@ -47,24 +51,54 @@ class Generator(Entity):
         self.resource = 0
 
 
-
 def get_player_list():
+<<<<<<< HEAD
     return list(k for k in entities if entities[k].type=="player")
+=======
+    return list(k for k in entities if entities[k].type == "player")
+
+>>>>>>> 85f9773fb3fb20d90265df33fbb0bfd50f594530
 
 def get(uuid) -> Entity:
     return entities[uuid]
 
+
 def get_player(uuid) -> Player:
     return entities[uuid]
+
 
 def get_generator(uuid) -> Generator:
     return entities[uuid]
 
+
+def respawn(player: Player):
+    player.alive = True
+
+    ret = {
+        "event": "spawn",
+        "type": "player",
+        "uuid": player.uuid,
+        "team": player.team,
+        "x": player.x,
+        "y": player.y,
+        "z": player.z
+    }
+    GameServer.get_server_ins().broadcast(json.dumps(ret), None)
+
+
 def kill(entity: Entity):
     if entity.type == "player":
         entity.alive = False
-    else: 
+        do_later(respawn, [entity], 5)
+
+    else:
         del entities[entity.uuid]
+
+    ret = {
+        "event": "kill",
+        "uuid": entity.uuid
+    }
+    GameServer.get_server_ins().broadcast(json.dumps(ret), None)
 
 
 def damage(damager: Entity, victim: Entity, amount: int) -> bool:
