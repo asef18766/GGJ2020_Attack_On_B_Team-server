@@ -1,11 +1,13 @@
 from base_state import BaseState
 from waiting_room import WaitingRoomState
+from stage import Stage
 from uuid import UUID
 import json
 class StateHandler():
     state = None
     state_lib = {
         "WaitingRoom":WaitingRoomState()
+        "Stage":Stage()
     }
     __ins__ = None
 
@@ -24,5 +26,6 @@ class StateHandler():
     def recv(self ,events:dict):
         tran = str(self.state.update(event))
         if tran != "":
+            print("transit to " ,tran)
             self.transition_to(self.state_lib[tran])
         

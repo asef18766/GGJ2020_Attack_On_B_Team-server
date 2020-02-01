@@ -9,7 +9,7 @@ class GameServer():
     BUFSIZE = 65525
 
     @staticmethod
-    def get_server_ins():
+    def get_server_ins()->GameServer:
         if GameServer.server_ins == None:
             GameServer.server_ins = GameServer()
         return GameServer.server_ins
@@ -23,7 +23,11 @@ class GameServer():
     def recvall(self)->dict:
         data = {}
         for k in self.clients.keys():
-            req = socket.socket(self.clients[k]).recv(65525).decode()
+            l = socket.socket(self.clients[k]).recv(4)
+            if l == "":
+                continue
+            l = int.from_bytes(l,byteorder="litte")
+            req = socket.socket(self.clients[k]).recv(l)
             data.update({k:req})
         return data
     
@@ -32,10 +36,12 @@ class GameServer():
             if broadcaster != None:
                 if k == broadcaster:
                     continue
-            socket.socket(self.clients[k]).send(msg.encode())
+            self.send(msg , k)
 
     def send(self , msg:str , id:uuid.UUID):
-        socket.socket(self.clients[id]).send(msg.encode())
+        b_msg = msg.encode()
+        len_msg = len(b_msg).to_bytes(length=4,byteorder="little")
+        socket.socket(self.clients[id]).send(len_msg+b_msg)
     
     def process(self,events:dict):
         self.state_processor.recv(events)
