@@ -1,4 +1,4 @@
-from base_state import base_state
+from base_state import BaseState
 from waiting_room import WaitingRoomState
 class state_handler():
     state = None
