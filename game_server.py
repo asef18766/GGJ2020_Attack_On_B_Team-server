@@ -26,12 +26,15 @@ class GameServer():
                 l = self.clients[k].recv(4)
             except BlockingIOError:
                 return {}
+            except socket.timeout:
+                return {}
+            
             if l == "":
                 continue
             print("========== packet ===========")
             print(f"receiver uuid:{k.hex}")
-            print(f"l:{l}")
             l = int.from_bytes(l,byteorder="little")
+            print(f"l:{l}")
             req = self.clients[k].recv(l)
             print(f"req:{req}")
             print("=============================")
@@ -48,7 +51,8 @@ class GameServer():
     def send(self , msg:str , id:uuid.UUID):
         b_msg = msg.encode()
         len_msg = len(b_msg).to_bytes(length=4,byteorder="little")
-        socket.socket(self.clients[id]).send(len_msg+b_msg)
+        print("send packet:" , len_msg+b_msg)
+        self.clients[id].send(len_msg+b_msg)
     
     def process(self,events:dict):
         self.state_processor.recv(events)

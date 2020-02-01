@@ -35,6 +35,7 @@ class WaitingRoomState(BaseState):
         if i not in get_player_list():
             return False
         player = get_player(i)
+        print("create new player uuid:" , i.hex)
         player.name = player_name
         self.players.update({
             player.uuid:player
@@ -57,7 +58,7 @@ class WaitingRoomState(BaseState):
         print("partitioning...")
         first_team = 0
         while first_team < self.MAX_PLAYER:
-            choice = self.players.keys()[random.randint(0,7)]
+            choice = list(self.players.keys())[random.randint(0,7)]
             if self.players[choice].team != "":
                 continue
             first_team += 1
@@ -71,11 +72,16 @@ class WaitingRoomState(BaseState):
 
     # aka
     def check_if_ready(self):
+        if len(get_player_list()) < self.MAX_PLAYER:
+            return False
+        
+        
         for k in list(self.players_ready.keys()):
             if self.players_ready[k] == False:
-                return False     
-        self.partition()
+                return False
+        
         print("able to entered!!")
+        self.partition()
         return True
     
     # aka
@@ -88,27 +94,30 @@ class WaitingRoomState(BaseState):
         return True
     
     def dispatch(self , uuid:UUID , event:dict):
-        if s["event"] == "connect":
+        if event["event"] == "connect":
+            print("receive cooenct event from:" ,uuid.hex)
             res = {}
-            if self.check_player(uuid , s["playerName"]):
+            if self.check_player(uuid , event["playerName"]):
                 res.update({
                     "event":"connect",
-                    "playerName":s["playerName"],
+                    "playerName":event["playerName"],
                     "success":True,
-                    "uuid":uuid.hex()
+                    "uuid":uuid.hex
                 })
             else:
                 res.update({
                     "event":"connect",
-                    "playerName":s["playerName"],
+                    "playerName":event["playerName"],
                     "success":False,
                     "uuid":""
                 })
             self.server.send(json.dumps(res),uuid)
         
-        if s["event"] == "ready":
+        if event["event"] == "ready":
+            print("receive ready from uuid:",uuid.hex)
             self.set_ready(uuid)
-        if s["event"] == "entered_game":
+        if event["event"] == "entered_game":
+            print("receive entered game from uuid:" , uuid.hex)
             self.set_enter(uuid)
     def send_waiting(self):
         msg = {
@@ -116,20 +125,18 @@ class WaitingRoomState(BaseState):
                 "players":[]
         }
         for i in get_player_list():
+            if get_player(i).name == "":
+                continue
             msg["players"].append({
-                "uuid":i.hex(),
+                "uuid":i.hex,
                 "playerName":get_player(i).name,
                 "ready":self.players_ready[i]
             })
-        self.server.broadcast(json.dumps(msg) , None)
+        for i in msg["players"]:
+            self.server.send(json.dumps(msg),UUID(i["uuid"])) 
+
             
     def update(self, s:dict)->str:
-        for k in s.keys():
-            self.dispatch(k,s[k])
-        
-        # broadcast waiting event
-        self.send_waiting()
-
         if self.status_code == self.STILL_WAITING:
             if self.check_if_ready():
                 msg = {
@@ -151,5 +158,16 @@ class WaitingRoomState(BaseState):
         elif self.status_code == self.ALL_READY:
             print("entered stage")
             return "Stage"
+
+        # broadcast waiting event
+        self.send_waiting()
+
+        if s == {}:
+            return ""
+        
+        for k in list(s.keys()):
+            self.dispatch(k,json.loads(s[k]))
+        
+        return ""
         
         

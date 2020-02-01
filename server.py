@@ -5,6 +5,8 @@ import game_server
 from entity import *
 from state_handler import *
 
+CLIENT_TIMEOUT = 0.01
+
 GENERATOR_COOLDOWN = 10
 WILD_GENERATOR_COOLDOWN = 20
 ready_dict = {}
@@ -58,7 +60,8 @@ def start_server():
     while True:
         try:
             (client, _) = sock.accept()
-            client.setblocking(False)
+            client.setblocking(True)
+            client.settimeout(CLIENT_TIMEOUT)
             server.add_client(client)
         except socket.timeout:
             print("no new player :P")
@@ -66,8 +69,7 @@ def start_server():
             pass
 
         packets = server.recvall()
-        for p in packets.items():
-            StateHandler.get_instance().recv(p)
+        StateHandler.get_instance().recv(packets)
         # game_tick()
 
 

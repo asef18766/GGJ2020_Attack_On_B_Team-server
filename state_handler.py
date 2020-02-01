@@ -24,7 +24,7 @@ class StateHandler():
         self.state = self.state_lib[state]
     
     def recv(self ,events:dict):
-        tran = str(self.state.update(event))
+        tran = str(self.state.update(events))
         if tran != "":
             print("transit to " ,tran)
             self.transition_to(self.state_lib[tran])
