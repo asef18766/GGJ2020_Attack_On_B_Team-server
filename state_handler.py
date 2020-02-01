@@ -1,11 +1,13 @@
 from base_state import BaseState
 from waiting_room import WaitingRoomState
+from game_stage import GameStage
 from uuid import UUID
 import json
 class StateHandler():
     state = None
     state_lib = {
         "WaitingRoom":WaitingRoomState()
+        "GameStage":GameStage()
     }
     __ins__ = None
 

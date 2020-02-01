@@ -1,4 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\Lemino\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "python.pythonPath": "/Library/Frameworks/Python.framework/Versions/3.7/bin/python3",
     "python.formatting.provider": "autopep8"
 }
