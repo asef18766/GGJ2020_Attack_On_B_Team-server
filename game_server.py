@@ -1,6 +1,8 @@
 import socket
 import uuid
 import entity
+import send_api
+import receive_api
 class GameServer():
     clients = {}
 
@@ -29,4 +31,4 @@ class GameServer():
         socket.socket(self.clients[id]).send(msg.encode())
     @staticmethod
     def process(sender:uuid.UUID , data:dict):
-        pass
+        getattr(receive_api, data['event'])(sender,data)

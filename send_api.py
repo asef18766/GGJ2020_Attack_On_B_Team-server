@@ -1,3 +1,4 @@
+
 '''
 * connect
     create connection
@@ -51,6 +52,18 @@
         "position":
     }
     ```
+'''
+def move(entity):
+    ret={
+        "event":"move",
+        "uuid":entity.uuid,
+        "x":entity.x,
+        "y":entity.y,
+        "z":entity.z,
+        "rotation":entity..rotation
+    }
+
+'''
 * change_weapon
     ```json
     {
