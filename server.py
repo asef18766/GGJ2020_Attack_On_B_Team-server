@@ -15,7 +15,7 @@ def start_server():
     sock.bind((cfg["ip_addr"] , int(cfg["port"])))
     sock.listen(int(cfg["max_player"]))
     sock.settimeout(float(cfg["timeout"]))
-    server = game_server.GameServer()
+    server = game_server.GameServer.get_server_ins()
     while True:
         try:
             (client, _) = sock.accept()
