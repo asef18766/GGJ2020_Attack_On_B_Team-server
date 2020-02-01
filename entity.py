@@ -4,7 +4,6 @@ MAX_HEALTH = {
     "building": 1000,
     "generator": 100,
     "player": 100,
-    "wild_generator": 1,
     "arrow": 1,
     "wall": 1,
 }
@@ -28,8 +27,20 @@ class Entity():
         entities.append(self)
 
 
-class Player(Entity):
-    def __init__(self, name: str, x: float, y: float, z: float):
-        super(Player, self).__init__("player", x, y, z)
+class Teamable(Entity):
+    def __init__(self, type: str, team: str, x: float, y: float, z: float):
+        super(Teamable, self).__init__(type, x, y, z)
+        self.team = team
+
+
+class Player(Teamable):
+    def __init__(self, name: str, team: str, x: float, y: float, z: float):
+        super(Player, self).__init__("player", team, x, y, z)
         self.name = name
+        self.resource = 0
+
+
+class Generator(Teamable):
+    def __init__(self, type: str, team: str, x: float, y: float, z: float):
+        super(Generator, self).__init__(type, team, x, y, z)
         self.resource = 0
