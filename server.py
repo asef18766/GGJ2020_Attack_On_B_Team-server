@@ -26,7 +26,7 @@ def start_server():
         
         packets=server.recvall()
         for i in packets.keys():
-            server.process(uuid.UUID(i) , data[i])
+            server.process(data[i])
     
 if __name__ == "__main__":
     start_server()
