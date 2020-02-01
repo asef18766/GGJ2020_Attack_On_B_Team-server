@@ -4,6 +4,7 @@ import uuid
 import game_server
 from entity import *
 from state_handler import *
+from selectors import *
 
 CLIENT_TIMEOUT = 0.01
 

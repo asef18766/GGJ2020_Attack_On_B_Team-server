@@ -12,7 +12,7 @@ class WaitingRoomState(BaseState):
     TEAM2 = "OwO"
     
     # the player that game requires
-    MAX_PLAYER = 8
+    MAX_PLAYER = 2
 
     # key: uuid
     # value: {"playerName":str , "ready":boolean , "team":int}
@@ -36,6 +36,8 @@ class WaitingRoomState(BaseState):
             return False
         player = get_player(i)
         print("create new player uuid:" , i.hex)
+        print("b4 player_ready:" , self.players_ready)
+        print("b4 player_entered" , self.player_entered)
         player.name = player_name
         self.players.update({
             player.uuid:player
@@ -58,7 +60,7 @@ class WaitingRoomState(BaseState):
         print("partitioning...")
         first_team = 0
         while first_team < self.MAX_PLAYER:
-            choice = list(self.players.keys())[random.randint(0,7)]
+            choice = list(self.players.keys())[random.randint(0,self.MAX_PLAYER-1)]
             if self.players[choice].team != "":
                 continue
             first_team += 1
@@ -74,10 +76,12 @@ class WaitingRoomState(BaseState):
     def check_if_ready(self):
         if len(get_player_list()) < self.MAX_PLAYER:
             return False
-        
-        
+        if self.players_ready == {}:
+            return False
         for k in list(self.players_ready.keys()):
             if self.players_ready[k] == False:
+                return False
+            if get_player(k).name == "":
                 return False
         
         print("able to entered!!")
@@ -116,9 +120,13 @@ class WaitingRoomState(BaseState):
         if event["event"] == "ready":
             print("receive ready from uuid:",uuid.hex)
             self.set_ready(uuid)
+            print("player_ready:" , self.players_ready)
+            
         if event["event"] == "entered_game":
             print("receive entered game from uuid:" , uuid.hex)
             self.set_enter(uuid)
+            print("player_entered" , self.player_entered)
+        
     def send_waiting(self):
         msg = {
                 "event":"waiting",
@@ -134,7 +142,6 @@ class WaitingRoomState(BaseState):
             })
         for i in msg["players"]:
             self.server.send(json.dumps(msg),UUID(i["uuid"])) 
-
             
     def update(self, s:dict)->str:
         if self.status_code == self.STILL_WAITING:
