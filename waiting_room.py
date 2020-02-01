@@ -57,6 +57,6 @@ class WaitingRoomState(BaseState):
         return True
     
     def update(self, s:dict)->str:
-        pass
+        for i in s.keys():
         
         

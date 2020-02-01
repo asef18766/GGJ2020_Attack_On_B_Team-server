@@ -4,9 +4,17 @@ import entity
 import send_api
 import receive_api
 class GameServer():
+    server_ins = None
     clients = {}
 
     BUFSIZE = 65525
+
+    @staticmethod
+    def get_server_ins():
+        if GameServer.server_ins == None:
+            GameServer.server_ins = GameServer()
+        return GameServer.server_ins
+    
     def add_client(self,client:socket.socket,name:str):
         player=entity.Player(name,"",0,0,0)
         self.clients.update({
@@ -29,6 +37,7 @@ class GameServer():
 
     def send(self , msg:str , id:uuid.UUID):
         socket.socket(self.clients[id]).send(msg.encode())
+    
     @staticmethod
     def process(sender:uuid.UUID , data:dict):
         getattr(receive_api, data['event'])(sender,data)
