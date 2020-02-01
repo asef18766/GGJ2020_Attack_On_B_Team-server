@@ -11,8 +11,9 @@ INIT_BUILDING_HEALTH = 100
 
 
 class Entity():
-    def __init__(self, type: str, x: float, y: float, z: float):
+    def __init__(self, type: str, team: str, x: float, y: float, z: float):
         self.type = type
+        self.team = team
         self.x = x
         self.y = y
         self.z = z
@@ -27,20 +28,23 @@ class Entity():
         entities.append(self)
 
 
-class Teamable(Entity):
-    def __init__(self, type: str, team: str, x: float, y: float, z: float):
-        super(Teamable, self).__init__(type, x, y, z)
-        self.team = team
-
-
-class Player(Teamable):
+class Player(Entity):
     def __init__(self, name: str, team: str, x: float, y: float, z: float):
         super(Player, self).__init__("player", team, x, y, z)
         self.name = name
         self.resource = 0
+        self.weapon = 0
 
 
-class Generator(Teamable):
+class Generator(Entity):
     def __init__(self, type: str, team: str, x: float, y: float, z: float):
         super(Generator, self).__init__(type, team, x, y, z)
         self.resource = 0
+
+
+def kill(entity: Entity):
+    pass
+
+
+def on_damage(damager: Entity, victim: Entity):
+    pass
