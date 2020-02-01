@@ -1,3 +1,3 @@
-class base_state():
-    def update(self, str):
+class BaseState():
+    def update(self, s:dict)->str:
         pass

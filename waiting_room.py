@@ -1,7 +1,7 @@
 import random
-from base_state import base_state
+from base_state import BaseState
 from entity import Player
-class WaitingRoomState(base_state):
+class WaitingRoomState(BaseState):
     # team names
     TEAM1 = "yee"
     TEAM2 = "OwO"
@@ -14,8 +14,6 @@ class WaitingRoomState(base_state):
     players = {}
     players_ready = {}
     def __init__(self):
-        pass
-    def __get_uuid__(self):
         pass
 
     # aka
@@ -57,4 +55,8 @@ class WaitingRoomState(base_state):
         print("able to start!!")
         self.partition()
         return True
+    
+    def update(self, s:dict)->str:
+        pass
+        
         
