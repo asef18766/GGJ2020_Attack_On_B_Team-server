@@ -30,7 +30,7 @@ def start_server():
         
         packets=server.recvall()
         for i in packets.keys():
-            server.process(uuid.UUID(i) , data[i])
+            server.process(data[i])
         game_tick()
     
 if __name__ == "__main__":

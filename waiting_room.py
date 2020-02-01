@@ -1,6 +1,11 @@
 import random
 from base_state import BaseState
 from entity import Player
+from entity import get_player_list
+from entity import get_player
+from game_server import GameServer
+from uuid import UUID
+
 class WaitingRoomState(BaseState):
     # team names
     TEAM1 = "yee"
@@ -13,12 +18,16 @@ class WaitingRoomState(BaseState):
     # value: {"playerName":str , "ready":boolean , "team":int}
     players = {}
     players_ready = {}
+    server = GameServer.get_server_ins()
     def __init__(self):
         pass
 
-    # aka
-    def add_player(self ,player_name:str):
-        player = Player(player_name ,"",0,0,0)
+    # find wheather player existed
+    def check_player(self , i:UUID ,player_name:str)->bool:
+        if i not in get_player_list():
+            return False
+        player = get_player(i)
+        player.name = player_name
         self.players.update({
             player.uuid:player
         })
@@ -55,8 +64,15 @@ class WaitingRoomState(BaseState):
         print("able to start!!")
         self.partition()
         return True
+
+    def dispatch(self , uuid:UUID , event:dict):
+        if s["event"] == "connect":
+            self.check_player(uuid , s["playerName"])
+        if s["event"] == "ready":
+            self.set_ready(uuid)
     
     def update(self, s:dict)->str:
-        for i in s.keys():
+        for k in s.keys():
+            self.dispatch(k,s[k])
         
         
