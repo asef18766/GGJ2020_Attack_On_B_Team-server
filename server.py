@@ -2,11 +2,15 @@ import socket
 import json
 import uuid
 import game_server
+from state_handler import *
 
 def read_cfg():
     with open("settings.json","r") as fp:
         data = dict(json.loads(fp.read()))
         return data
+
+def game_tick():
+    if 
 
 def start_server():
     cfg=dict(read_cfg())
@@ -27,6 +31,7 @@ def start_server():
         packets=server.recvall()
         for i in packets.keys():
             server.process(uuid.UUID(i) , data[i])
+        game_tick()
     
 if __name__ == "__main__":
     ready_dict={}

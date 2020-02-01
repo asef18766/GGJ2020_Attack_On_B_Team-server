@@ -226,4 +226,12 @@ def spawn(sender, data):
 '''
 def purchase(sender, data):
     player=get_player(sender)
+    if player.resource>=GENERATOR_PRICE:
+        player.resource-=GENERATOR_PRICE
+        player.item['generator']+=1
     
+    ret={
+        "resource":player.resource,
+        "item":player.item
+    }
+    send(ret,sender)

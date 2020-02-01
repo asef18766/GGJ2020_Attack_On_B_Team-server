@@ -8,6 +8,7 @@ MAX_HEALTH = {
     "wall": 1,
 }
 INIT_BUILDING_HEALTH = 100
+GENERATOR_PRICE = 100
 
 
 class Entity():
