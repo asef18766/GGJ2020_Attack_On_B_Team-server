@@ -19,7 +19,7 @@ class Entity():
         self.z = z
         self.rotation=0
         self.uuid = uuid.uuid4()
-        while self.uuid in entities
+        while self.uuid in entities:
             self.uuid = uuid.uuid4()
 
         self.health = MAX_HEALTH[self.type]
@@ -49,7 +49,7 @@ class Generator(Entity):
 
 
 def get_player_list():
-    return list(k in entities if entities[k].type=="player")
+    return list(k for k in entities if entities[k].type=="player")
 
 def get(uuid) -> Entity:
     return entities[uuid]
@@ -61,7 +61,7 @@ def get_generator(uuid) -> Generator:
     return entities[uuid]
 
 def kill(entity: Entity):
-    if entity.type = "player":
+    if entity.type == "player":
         entity.alive = False
     else: 
         del entities[entity.uuid]
