@@ -7,6 +7,10 @@ from state_handler import *
 
 GENERATOR_COOLDOWN = 10
 WILD_GENERATOR_COOLDOWN = 20
+ready_dict = {}
+enter_dict = {}
+timer = 0
+tasks = []
 
 
 def read_cfg():
@@ -16,6 +20,7 @@ def read_cfg():
 
 
 def game_tick():
+    global timer
     timer += 1
 
     for task in tasks:
@@ -23,23 +28,23 @@ def game_tick():
             tasks.remove(task)
             task["function"](*task['args'])
 
-    changed=set()
+    changed_generator = set()
 
     if timer % GENERATOR_COOLDOWN == 0:
         for e in entities.items():
             if e.type == "generator" and e.team is not None:
-                changed.add(e.uuid)
+                changed_generator.add(e.uuid)
                 e.resource += 1
 
     if timer % WILD_GENERATOR_COOLDOWN == 0:
         for e in entities.items():
             if e.type == "generator" and e.team is None:
-                changed.add(e.uuid)
+                changed_generator.add(e.uuid)
                 e.resource += 1
 
 
 def do_later(func, args, sec):
-    task.append({"function": func, "time"=timer+sec*20})
+    task.append({"function": func, "time": timer+sec*20})
 
 
 def start_server():
@@ -60,13 +65,9 @@ def start_server():
 
         packets = server.recvall()
         for i in packets.keys():
-            server.process(data[i])
+            StateHandler.get_instance().recv(data[i])
         game_tick()
 
 
 if __name__ == "__main__":
-    ready_dict = {}
-    enter_dict = {}
     start_server()
-    timer = 0
-    tasks = []

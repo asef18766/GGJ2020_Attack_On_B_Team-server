@@ -1,6 +1,6 @@
 import uuid
-from game_server import *
-from server import *
+#from game_server import *
+#from server import *
 import json
 entities = {}
 MAX_HEALTH = {
@@ -23,8 +23,8 @@ class Entity():
         self.z = z
         self.rotation = 0
         self.uuid = uuid.uuid4()
-        while self.uuid in entities
-        self.uuid = uuid.uuid4()
+        while self.uuid in entities:
+            self.uuid = uuid.uuid4()
 
         self.health = MAX_HEALTH[self.type]
         if self.type == "building":
@@ -52,7 +52,7 @@ class Generator(Entity):
 
 
 def get_player_list():
-    return list(k in entities if entities[k].type == "player")
+    return list(k for k in entities if entities[k].type == "player")
 
 
 def get(uuid) -> Entity:
@@ -83,7 +83,7 @@ def respawn(player: Player):
 
 
 def kill(entity: Entity):
-    if entity.type = "player":
+    if entity.type == "player":
         entity.alive = False
         do_later(respawn, [entity], 5)
 

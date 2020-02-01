@@ -1,11 +1,9 @@
 import socket
 import uuid
 import entity
-from state_handler import StateHandler
 class GameServer():
     server_ins = None
     clients = {}
-    state_processor = StateHandler.get_instance()
     BUFSIZE = 65525
 
     @staticmethod
@@ -36,6 +34,3 @@ class GameServer():
 
     def send(self , msg:str , id:uuid.UUID):
         socket.socket(self.clients[id]).send(msg.encode())
-    
-    def process(self,events:dict):
-        self.state_processor.recv(events)

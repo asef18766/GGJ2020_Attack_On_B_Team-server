@@ -1,14 +1,13 @@
 from base_state import BaseState
 from entity import *
 from game_server import GameServer
-import receive_api
 
 
 def broadcast(msg: dict, broadcaster: uuid.UUID):
     game_server.GameServer.get_server_ins().broadcast(json.dumps(msg), broadcaster)
 
 
-def send(msg: dict, id: uuid.UUID)):
+def send(msg: dict, id: uuid.UUID):
     game_server.GameServer.get_server_ins().send(json.dumps(msg), id)
 
 class GameStage(BaseState):

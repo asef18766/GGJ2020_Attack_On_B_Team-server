@@ -6,7 +6,7 @@ import json
 class StateHandler():
     state = None
     state_lib = {
-        "WaitingRoom":WaitingRoomState()
+        "WaitingRoom":WaitingRoomState(),
         "GameStage":GameStage()
     }
     __ins__ = None
