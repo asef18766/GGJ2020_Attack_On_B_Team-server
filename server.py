@@ -29,4 +29,6 @@ def start_server():
             server.process(data[i])
     
 if __name__ == "__main__":
+    ready_dict={}
+    enter_dict={}
     start_server()
