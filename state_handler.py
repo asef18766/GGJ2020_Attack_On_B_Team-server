@@ -1,21 +1,13 @@
 from base_state import BaseState
 from waiting_room import WaitingRoomState
-<<<<<<< HEAD
-from stage import Stage
-=======
 from game_stage import GameStage
->>>>>>> 85f9773fb3fb20d90265df33fbb0bfd50f594530
 from uuid import UUID
 import json
 class StateHandler():
     state = None
     state_lib = {
         "WaitingRoom":WaitingRoomState(),
-<<<<<<< HEAD
-        "Stage":Stage()
-=======
         "GameStage":GameStage()
->>>>>>> 85f9773fb3fb20d90265df33fbb0bfd50f594530
     }
     __ins__ = None
 

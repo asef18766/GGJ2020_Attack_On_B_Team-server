@@ -52,12 +52,8 @@ class Generator(Entity):
 
 
 def get_player_list():
-<<<<<<< HEAD
-    return list(k for k in entities if entities[k].type=="player")
-=======
     return list(k for k in entities if entities[k].type == "player")
 
->>>>>>> 85f9773fb3fb20d90265df33fbb0bfd50f594530
 
 def get(uuid) -> Entity:
     return entities[uuid]

@@ -21,10 +21,12 @@ class WaitingRoomState(BaseState):
     player_entered = {}
     server = GameServer.get_server_ins()
 
-    status_code = WaitingRoomState.STILL_WAITING
+    
     STILL_WAITING = 0
     CLIENT_LOADING = 1
     ALL_READY = 2
+    status_code = 0
+
     def __init__(self):
         pass
 

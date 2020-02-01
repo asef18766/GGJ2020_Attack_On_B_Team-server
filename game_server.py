@@ -7,7 +7,7 @@ class GameServer():
     BUFSIZE = 65525
 
     @staticmethod
-    def get_server_ins()->GameServer:
+    def get_server_ins():
         if GameServer.server_ins == None:
             GameServer.server_ins = GameServer()
         return GameServer.server_ins
@@ -37,13 +37,9 @@ class GameServer():
             self.send(msg , k)
 
     def send(self , msg:str , id:uuid.UUID):
-<<<<<<< HEAD
         b_msg = msg.encode()
         len_msg = len(b_msg).to_bytes(length=4,byteorder="little")
         socket.socket(self.clients[id]).send(len_msg+b_msg)
     
     def process(self,events:dict):
         self.state_processor.recv(events)
-=======
-        socket.socket(self.clients[id]).send(msg.encode())
->>>>>>> 85f9773fb3fb20d90265df33fbb0bfd50f594530
