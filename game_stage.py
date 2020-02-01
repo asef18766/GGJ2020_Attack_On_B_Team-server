@@ -48,7 +48,7 @@ class GameStage(BaseState):
     def damage(self, sender, data):
         victim = get(data['uuid'])
         player = get_player(sender)
-        get(data['damager'].damage(
+        get(data['damager']).damage(
                       victim, data['amount'])
 
         if victim.type == "generator" and victim.team is not None and victim.team != player.team:

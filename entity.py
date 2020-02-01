@@ -48,7 +48,7 @@ class Entity():
         }
         GameServer.get_server_ins().broadcast(json.dumps(ret), None)
 
-    def damage(self, victim: Entity, amount: int) -> bool:
+    def damage(self, victim, amount: int) -> bool:
         if victim.type == "wall" or victim.type == "arrow":
             amount = 0
         if victim.type == "generator" and victim.team is None:
@@ -68,12 +68,12 @@ class Entity():
     def send_spawn(self):
         ret = {
             "event": "spawn",
-            "type": self).type,
-            "uuid": self).uuid,
-            "team": self).team,
-            "x": self).x,
-            "y": self).y,
-            "z": self).z
+            "type": self.type,
+            "uuid": self.uuid,
+            "team": self.team,
+            "x": self.x,
+            "y": self.y,
+            "z": self.z
         }
         GameServer.get_server_ins().broadcast(json.dumps(ret), None)
 

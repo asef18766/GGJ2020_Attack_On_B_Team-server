@@ -11,9 +11,9 @@ class WaitingRoomState(BaseState):
     # team names
     TEAM1 = "yee"
     TEAM2 = "OwO"
-    MAP_WIDTH
-    MAP_HEIGHT
-    BLOCK_WIDTH
+    MAP_WIDTH = 100
+    MAP_HEIGHT = 100
+    BLOCK_WIDTH = 100
 
     # the player that game requires
     MAX_PLAYER = 8
