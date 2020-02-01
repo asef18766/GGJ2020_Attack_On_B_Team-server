@@ -73,13 +73,13 @@ class Entity():
             "team": self.team,
             "x": self.x,
             "y": self.y,
-            "z": self.z
+            "z": self.z,
             "rotation": self.rotation
         }
         GameServer.get_server_ins().broadcast(json.dumps(ret), None)
 
     def send_move(self):
-        ret={
+        ret = {
             "event": "move",
             "uuid": self.uuid,
             "x": self.x,
@@ -93,30 +93,24 @@ class Entity():
 class Player(Entity):
     def __init__(self, name: str, team: str, x: float, y: float, z: float):
         super(Player, self).__init__("player", team, x, y, z)
-        self.name=name
-        self.resource=0
-        self.weapon=0
-        self.alive=True
-        self.item={
+        self.name = name
+        self.resource = 0
+        self.weapon = 0
+        self.alive = True
+        self.item = {
             "generator": 0
         }
 
     def respawn(self):
-        self.alive=True
-
-        ret={
-            "event": "spawn",
-            "type": "player",
-            "uuid": self.uuid,
-            "team": self.team,
-            "x": self.x,
-            "y": self.y,
-            "z": self.z
-        }
-        GameServer.get_server_ins().broadcast(json.dumps(ret), None)
+        self.alive = True
+        building = get_building(self.team)
+        self.x = building.x
+        self.y = building.y
+        self.z = building.z
+        self.send_spawn()
 
     def send_stats(self):
-        ret={
+        ret = {
             "event": "stats",
             "resource": self.resource,
             "item": self.item
@@ -127,7 +121,7 @@ class Player(Entity):
 class Generator(Entity):
     def __init__(self, type: str, team: str, x: float, y: float, z: float):
         super(Generator, self).__init__(type, team, x, y, z)
-        self.resource=0
+        self.resource = 0
 
 
 def get_player_list():
@@ -140,6 +134,7 @@ def get(uuid) -> Entity:
 
 def get_player(uuid) -> Player:
     return entities[uuid]
+
 
 def get_building(team: str) -> Entity:
     return building1 if building1.team == team else building2
