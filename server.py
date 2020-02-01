@@ -53,7 +53,7 @@ def start_server():
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((cfg["ip_addr"], int(cfg["port"])))
     sock.listen(int(cfg["max_player"]))
-    sock.settimeout(float(cfg["timeout"]))
+    sock.setblocking(False)
     server = game_server.GameServer.get_server_ins()
     while True:
         try:
@@ -62,11 +62,13 @@ def start_server():
             server.add_client(client)
         except socket.timeout:
             print("no new player :P")
+        except:
+            pass
 
         packets = server.recvall()
-        for i in packets.keys():
-            StateHandler.get_instance().recv(data[i])
-        game_tick()
+        for p in packets.items():
+            StateHandler.get_instance().recv(p)
+        # game_tick()
 
 
 if __name__ == "__main__":
