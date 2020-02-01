@@ -17,22 +17,16 @@ def send(msg: dict, id: uuid.UUID):
 
 class GameStage(BaseState):
 
+    def __init__(self):
+        pass
+
     def move(self, sender, data):
         entity = get(data['uuid'])
         entity.x = data['x']
         entity.y = data['y']
         entity.z = data['z']
         entity.rotation = data['rotation']
-
-        ret = {
-            "event": "move",
-            "uuid": entity.uuid,
-            "x": entity.x,
-            "y": entity.y,
-            "z": entity.z,
-            "rotation": entity.rotation
-        }
-        broadcast(ret, entity.uuid)
+        entity.send_move()
 
     def change_weapon(self, sender, data):
         player = get_player(sender)
@@ -52,10 +46,16 @@ class GameStage(BaseState):
         broadcast(ret, None)
 
     def damage(self, sender, data):
-        entity.damage(get(data['damager']),
-                      get(data['target']), data['amount'])
+        victim = get(data['uuid'])
+        player = get_player(sender)
+        get(data['damager'].damage(
+                      victim, data['amount'])
 
-        ret = {
+        if victim.type == "generator" and victim.team is not None and victim.team != player.team:
+            player.resource += 1
+            player.send_stats()
+
+        ret={
             "event": "damage",
             "uuid": data['target'],
             "amount": data['amount'],
@@ -63,41 +63,32 @@ class GameStage(BaseState):
         }
         broadcast(ret, None)
 
-    def spawn(sef, sender, data):
-        e = Entity(data['type'], get(sender).team,
+    def spawn(self, sender, data):
+        e=Entity(data['type'], get(sender).team,
                    data['x'], data['y'], data['z'])
 
-        ret = {
-            "event": "spawn",
-            "type": e.type,
-            "uuid": e.uuid,
-            "team": e.team,
-            "x": e.x,
-            "y": e.y,
-            "z": e.z
-        }
-        broadcast(ret, sender)
+        if e.type == "generator":
+            player=get_player(sender)
+            player.item['generator'] -= 1
+            player.send_stats()
+
+        e.send_spawn()
 
     def purchase(self, sender, data):
-        player = get_player(sender)
+        player=get_player(sender)
         if player.resource >= GENERATOR_PRICE:
             player.resource -= GENERATOR_PRICE
             player.item['generator'] += 1
-
-        ret = {
-            "resource": player.resource,
-            "item": player.item
-        }
-        send(ret, sender)
+            player.send_stats()
 
     def update(self, s: dict)->str:
         for k in s.keys():
             getattr(self, s["event"])(k, s[k])
 
-        changed_generator = set()
-        changed_player = set()
-        changed_building = set()
-        server = game_server.GameServer.get_server_ins()
+        changed_generator=set()
+        changed_player=set()
+        changed_building=set()
+        server=game_server.GameServer.get_server_ins()
 
         if timer % GENERATOR_COOLDOWN == 0:
             for e in entities.items():
@@ -112,7 +103,7 @@ class GameStage(BaseState):
                     e.resource += 1
 
         for uuid in get_player_list:
-            player = get_player(uuid)
+            player=get_player(uuid)
             for e in entities.items():
                 if e.type == "generator" and (player.x-e.y)**2+(player.y-e.y)**2 < MAX_COLLECT:
                     e.resource -= 1
@@ -120,14 +111,15 @@ class GameStage(BaseState):
                     changed_generator.add(e.uuid)
                     changed_player.add(player.uuid)
 
-                if e.type == "building" and (player.x-e.y)**2+(player.y-e.y)**2 < MAX_FIX_RANGE:
-                    e.health += 1
-                    player.resource -= 1
-                    changed_building.add(e.uuid)
-                    changed_player.add(player.uuid)
+            e=get_building(player.team)
+            if (player.x-e.y)**2+(player.y-e.y)**2 < MAX_FIX_RANGE:
+                e.health += 1
+                player.resource -= 1
+                changed_building.add(e.uuid)
+                changed_player.add(player.uuid)
 
         for uuid in changed_generator:
-            ret = {
+            ret={
                 "event": "resource",
                 "uuid": uuid,
                 "amount": get(uuid).resource
@@ -135,14 +127,10 @@ class GameStage(BaseState):
             server.broadcast(json.dumps(ret), None)
 
         for uuid in changed_player:
-            ret = {
-                "resource": get_player(uuid).resource,
-                "item": get_player(uuid).item()
-            }
-            server.send(json.dumps(ret), uuid)
+            get_player(uuid).send_stats()
 
         for uuid in changed_building:
-            ret = {
+            ret={
                 "event": "fix",
                 "uuid": uuid,
                 "progress": get(uuid).health
@@ -150,9 +138,9 @@ class GameStage(BaseState):
             server.broadcast(json.dumps(ret), None)
 
             if get(uuid).health >= MAX_HEALTH['bulding']:
-                ret = {
+                ret={
                     "event": "win_game",
-                    "uuid": uuid
+                    "winner": get(uuid).team
                 }
                 server.broadcast(json.dumps(ret), None)
                 return "WaitingRoom"
