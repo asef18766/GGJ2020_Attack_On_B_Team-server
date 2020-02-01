@@ -156,7 +156,7 @@ class WaitingRoomState(BaseState):
 
         elif self.status_code == self.ALL_READY:
             print("entered stage")
-            return "Stage"
+            return "GameStage"
 
     def generate_map():
         building1 = Entity("building", TEAM1,
@@ -168,7 +168,6 @@ class WaitingRoomState(BaseState):
                            self.MAP_WIDTH//2*self.BLOCK_WIDTH, 0, 0)
         building2.rotation = 180
         building2.send_spawn()
-        building2.send_move()
         entity.building2 = building2
 
         for uuid in get_player_list:

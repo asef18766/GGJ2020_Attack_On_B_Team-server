@@ -74,6 +74,7 @@ class Entity():
             "x": self.x,
             "y": self.y,
             "z": self.z
+            "rotation": self.rotation
         }
         GameServer.get_server_ins().broadcast(json.dumps(ret), None)
 
