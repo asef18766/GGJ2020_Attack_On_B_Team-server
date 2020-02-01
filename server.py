@@ -34,4 +34,6 @@ def start_server():
             print("no new player :P")
         
 if __name__ == "__main__":
+    ready_dict={}
+    enter_dict={}
     start_server()
