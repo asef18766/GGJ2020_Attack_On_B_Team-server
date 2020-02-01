@@ -2,5 +2,5 @@
     "ip_addr":"127.0.0.1",
     "port":"8787",
     "max_player":10,
-    "timeout":0.05
+    "timeout":10
 }
