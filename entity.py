@@ -85,7 +85,7 @@ def respawn(player: Player):
 def kill(entity: Entity):
     if entity.type == "player":
         entity.alive = False
-        do_later(respawn, [entity], 5)
+        respawn(entity)
 
     else:
         del entities[entity.uuid]
